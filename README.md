@@ -1,6 +1,6 @@
 # Java_TPs
 
-* This is Java Scripts from various resources.
+* This is Java programming Exercises from various resources.
 
 ### run the .java files
 
