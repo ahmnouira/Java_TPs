@@ -32,7 +32,7 @@ public class Circle{
         Circle c1 = new Circle(5);
         System.out.println("Area of the Circle[" + c1.getRadius() + "] :" + c1.area());
         System.out.println("Circumference of the Circle[" + c1.getRadius() +"]: " + c1.circumference());
-        System.out.println("Round Circumference :" + Math.round(c1.circumference())
+        System.out.println("Round Circumference :" + Math.round(c1.circumference()));
     }
     
 }
