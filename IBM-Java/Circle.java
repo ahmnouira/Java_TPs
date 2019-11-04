@@ -1,7 +1,6 @@
-// Find the area and circumference of circle 
+// Find the area and circumference of circle 'EX3'
 
-
-public class Circle{
+public class Circle {
 
     private  double radius;
 
@@ -25,10 +24,7 @@ public class Circle{
         return radius;
     }
 
-
     public static void main(String[] args) {
-
-   
         Circle c1 = new Circle(5);
         System.out.println("Area of the Circle[" + c1.getRadius() + "] :" + c1.area());
         System.out.println("Circumference of the Circle[" + c1.getRadius() +"]: " + c1.circumference());

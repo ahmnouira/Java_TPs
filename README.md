@@ -4,5 +4,6 @@
 
 ### run the .java files
 
-1. compile the _.java_ files using `javac <file-name>.java`.
+1. compile the _.java_ files using `javac <file-name>.java`. or use `run.sh` file.
 2. `java <file-name>` to run. 
+

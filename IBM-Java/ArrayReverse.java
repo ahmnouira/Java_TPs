@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 // Reserve the elements in the array var and place in the array reverseVar
 
-
 class ArrayReverse{
     public static void main(String[] args) {
         System.out.println("Declare and initialize an array");
