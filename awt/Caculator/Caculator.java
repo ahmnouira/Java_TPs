@@ -5,8 +5,6 @@ import java.awt.event.*;
  * Caculator
  */
 
-
-
 public class Caculator  extends Frame {
 
     private Panel inputPanel = new Panel();
