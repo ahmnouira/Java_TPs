@@ -1,38 +1,47 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/** version static of Caculator exercice
- * Caculator
+/** 
+ * @author "Ahmed Nouira"
+ * @version "1.0.0"
+ * @see "https://github.com/ahmnouira/Java_TPs/tree/master/awt/Caculator"
  */
-
 public class Caculator  extends Frame {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
+    // Les parametres de la connection
+    private String url="jdbc:mysql://localhost:3306/Calculator?useSSL=false";
+    private String login ="bobL";
+    private String pwd ="secret";
     private Panel inputPanel = new Panel();
     private Panel keysPanel = new Panel();
     private Panel opsPanel = new Panel();
     private Panel validation = new Panel();
-
-
-    public  String operation = ""; // change it 
+    private  String operation = ""; 
 
     Caculator() {
-
         this.setTitle("Caculator");
         this.setSize(300, 300);
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(212, 212, 212));
-
-
         // keys Btns 
         Button [][] keysBtns = new Button[][] {
 
             { new Button("7"), new Button("8"), new Button("9") },
             { new Button("6"), new Button("5"), new Button("4") },
             { new Button("3"), new Button("2"), new Button("1") },
-            { new Button("0"), new Button("+/-"), new Button("ClearAll") } 
-
+            { new Button("0"), new Button("All Ops ?"), new Button("ClearAll") } 
         };
-
 
         //declare opsBtn
         Button[][] opsBtns = new Button [][] {
@@ -59,10 +68,13 @@ public class Caculator  extends Frame {
                         if(e.getActionCommand().equals("ClearAll")) {
                             operation="";
                         }
-
-                        System.out.println(e.getActionCommand());
+                        if(e.getActionCommand().equals("All Ops ?")) {
+                            // display log
+                            operation = "See Your Terminal/CMD";
+                            Read();
+                        }
+                        // System.out.println(e.getActionCommand());
                         tf.setText(operation);
-
                     }
                 });
 
@@ -74,11 +86,7 @@ public class Caculator  extends Frame {
 
                 keysPanel.add(keysBtns[row][col]);
              }
-
         }
-
-        
-
 
         opsPanel.setLayout(new GridLayout(4,1)); 
         for(int row = 0; row < 4; row ++ ) {
@@ -87,7 +95,7 @@ public class Caculator  extends Frame {
                    // get action value from button
                    TextField tf = (TextField) inputPanel.getComponent(0);
                    operation += e.getActionCommand();
-                   System.out.println(e.getActionCommand());
+                    // System.out.println(e.getActionCommand());
                    tf.setText(operation);
                 }}); 
             
@@ -95,7 +103,6 @@ public class Caculator  extends Frame {
             opsPanel.add(opsBtns[row][0]);
         }
         
-
         // validation button
         validation.setLayout(new BorderLayout());
         Button Enter = new Button("Enter");
@@ -104,81 +111,111 @@ public class Caculator  extends Frame {
                 // get action value from button
                 TextField tf = (TextField) inputPanel.getComponent(0);
                 if(e.getActionCommand().equals("Enter")) {
-                    System.out.println("operation before :" + operation);
+                    // System.out.println("operation before :" + operation);
                     tf.setText(calule(operation));
-                    
                 } 
-
-               
-
-                System.out.println(e.getActionCommand());
+                // System.out.println(e.getActionCommand());
                 operation = "";
             }
         });
-
         validation.setForeground(Color.GREEN);
         validation.add(Enter, BorderLayout.SOUTH);
-
-
-        // get Componenet inside Panle
-      /*  TextField tf = (TextField) inputPanel.getComponent(0);
-        System.out.println(inputPanel.getComponent(0));
-        System.out.println(tf.getText());
-    
-        */
-
-        
         // add all Panel to Layout
         this.add(inputPanel, BorderLayout.NORTH);
         this.add(keysPanel, BorderLayout.CENTER);
         this.add(opsPanel, BorderLayout.EAST);
         this.add(validation, BorderLayout.SOUTH);
-
         this.setVisible(true);
 
     }
-
-
-
-
-
-
     public String calule(String ops) {
         // .slpit() : https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
-        
-        String[] operatinsArray; 
-        try {
-            
-       
-      
+   
+       String[] operatinsArray; 
+       Double res = 0.;
+       for(int i= 0; i < ops.length(); ) {
+     
         if (ops.contains("+")) {
             operatinsArray  =  ops.split("[+]");
-            Double res =  Double.parseDouble(operatinsArray[0]) + Double.parseDouble(operatinsArray[1]);
+            for (String n : operatinsArray) {
+                 // System.out.println("res: " +  res);
+                res += Double.parseDouble(n);
+            }
+            Insert(operatinsArray[0].toString(), '+',  operatinsArray[1].toString(), res.toString());
             return res.toString();
+
         } else if (ops.contains("-")) {
             operatinsArray  = ops.split("[-]");
-            Double res =  Double.parseDouble(operatinsArray[0]) - Double.parseDouble(operatinsArray[1]);
+            res =  Double.parseDouble(operatinsArray[0]) - Double.parseDouble(operatinsArray[1]);
+            Insert(operatinsArray[0], '-', operatinsArray[1], res.toString());
             return res.toString();
         } else if (ops.contains("*")) {
             operatinsArray = ops.split("[*]");
-            Double res =  Double.parseDouble(operatinsArray[0]) * Double.parseDouble(operatinsArray[1]);
+            res =  Double.parseDouble(operatinsArray[0]) * Double.parseDouble(operatinsArray[1]);
+            Insert(operatinsArray[0], '*', operatinsArray[1], res.toString());
             return res.toString();
         } else if (ops.contains("/")) {
             operatinsArray = ops.split("/");
-            Double res =  Double.parseDouble(operatinsArray[0]) / Double.parseDouble(operatinsArray[1]);
+            res =  Double.parseDouble(operatinsArray[0]) / Double.parseDouble(operatinsArray[1]);
+            Insert(operatinsArray[0], '/', operatinsArray[1], res.toString());
             return res.toString();
         }
-
-    } catch (Exception e) {
-        
-        return "I Cant do that SORRY !";
+       return "I Cant do that SORRY !";
     }
-       
-        return "Empty Operation!!!";
+    return "Error";
+}   
 
+public void Insert(String firstEl, Character opt, String secondEl, String result) {
+    try {
+        
+        // load driver
+        Class.forName("com.mysql.jdbc.Driver");
+        // connect to DB
+        Connection conn = DriverManager.getConnection(url, login, pwd);
+        // prepare statement 
+        Statement stInsert = conn.createStatement();
+        String insertSQL = "INSERT INTO operations(firstEl, opt, secondEl, result) VALUES ('"+firstEl+"','"+opt+"','"+secondEl+"','"+result+"');";
+        // excute 
+        stInsert.executeUpdate(insertSQL);    // executeUpdate return int
+         //Fermeture de la connection
+         conn.close();
 
-    } 
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Caculator.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Caculator.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+}
 
+    public void Read(){  
+     
+    try {
+        // chargement du driver
+        Class.forName("com.mysql.jdbc.Driver");
+        //Se connecter au SGBD et BD
+        Connection conn = DriverManager.getConnection(url,login,pwd);
+
+        // preparer le statement
+        Statement St = conn.createStatement();
+
+        // Creation de la requete
+        String requete= "SELECT * FROM Calculator.operations;";
+       //Execution de la requete SELECT
+        ResultSet rs= St.executeQuery(requete);
+        System.out.println("\n*** ALL Ops ? ***");
+        System.out.println("***firstEl***operation***secondEl***result***datetime***");
+        while (rs.next()){
+            System.out.println("     " + rs.getString(2) +  "          "  + rs.getString(3) + "          " + rs.getString(4) + "          " + rs.getString(5)  +"    "+ rs.getString(6));
+        }
+        //Fermeture de la connection
+        conn.close();
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Caculator.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Caculator.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+}
     public static void main(String[] args) {
        Caculator caculator = new Caculator();
 
